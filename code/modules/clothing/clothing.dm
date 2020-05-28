@@ -418,7 +418,6 @@ BLIND     // can't see anything
 		var/obj/item/clothing/under/U = H.w_uniform
 		if ((U.has_sensor && U.sensor_mode) && U.has_sensor != BROKEN_SENSORS)
 			GLOB.suit_sensors_list |= H
-			
 		else 
 			GLOB.suit_sensors_list -= H
 		
