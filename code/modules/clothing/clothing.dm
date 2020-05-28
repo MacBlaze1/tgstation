@@ -294,7 +294,6 @@ BLIND     // can't see anything
 		to_chat(usr, "<span class='warning'>You have moved too far away!</span>")
 		return
 	sensor_mode = modes.Find(switchMode) - 1
-	set_sensor_glob()
 	if (src.loc == usr)
 		switch(sensor_mode)
 			if(0)
