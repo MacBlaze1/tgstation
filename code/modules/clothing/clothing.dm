@@ -299,12 +299,16 @@ BLIND     // can't see anything
 		switch(sensor_mode)
 			if(0)
 				to_chat(usr, "<span class='notice'>You disable your suit's remote sensing equipment.</span>")
+				set_sensor_glob()
 			if(1)
 				to_chat(usr, "<span class='notice'>Your suit will now only report whether you are alive or dead.</span>")
+				set_sensor_glob()
 			if(2)
 				to_chat(usr, "<span class='notice'>Your suit will now only report your exact vital lifesigns.</span>")
+				set_sensor_glob()
 			if(3)
 				to_chat(usr, "<span class='notice'>Your suit will now report your exact vital lifesigns as well as your coordinate position.</span>")
+				set_sensor_glob()
 
 	if(ishuman(loc))
 		var/mob/living/carbon/human/H = loc
