@@ -294,20 +294,17 @@ BLIND     // can't see anything
 		to_chat(usr, "<span class='warning'>You have moved too far away!</span>")
 		return
 	sensor_mode = modes.Find(switchMode) - 1
+	set_sensor_glob()
 	if (src.loc == usr)
 		switch(sensor_mode)
 			if(0)
 				to_chat(usr, "<span class='notice'>You disable your suit's remote sensing equipment.</span>")
-				set_sensor_glob()
 			if(1)
 				to_chat(usr, "<span class='notice'>Your suit will now only report whether you are alive or dead.</span>")
-				set_sensor_glob()
 			if(2)
 				to_chat(usr, "<span class='notice'>Your suit will now only report your exact vital lifesigns.</span>")
-				set_sensor_glob()
 			if(3)
 				to_chat(usr, "<span class='notice'>Your suit will now report your exact vital lifesigns as well as your coordinate position.</span>")
-				set_sensor_glob()
 
 	if(ishuman(loc))
 		var/mob/living/carbon/human/H = loc
@@ -419,7 +416,7 @@ BLIND     // can't see anything
 	
 	if (istype(H.w_uniform, /obj/item/clothing/under))
 		var/obj/item/clothing/under/U = H.w_uniform
-		if (((U.has_sensor && U.sensor_mode) && !(H in GLOB.suit_sensors_list) && U.has_sensor != BROKEN_SENSORS))
+		if ((U.has_sensor && U.sensor_mode) && U.has_sensor != BROKEN_SENSORS)
 			GLOB.suit_sensors_list |= H
 			
 		else 
