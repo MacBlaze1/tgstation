@@ -36,10 +36,16 @@
 		return COMPONENT_INCOMPATIBLE
 
 /datum/component/forensics/proc/wipe_fingerprints()
-	for (var/print in fingerprints)
-		var/numCharWiped = rand(0,max(0,round(EU,1)))
-		var/pos = rand(0,length(print)-numCharWiped)
-		print.splicetext(pos,)
+	var/euler = 2.71828182
+	var/numCharWiped = 0
+	var/pos = 0
+ 	for (var/print in fingerprints)
+		numCharWiped = rand(0,max(0,round(-euler**((1/2)*times_cleaned)+6,1)))
+		pos = rand(1,length(print)-numCharWiped)
+		var/text
+		for (var/i in 1 to numCharWiped)
+			text += "X"
+		print = splicetext(print,pos,pos+numCharWiped,text)
 	return TRUE
 
 /datum/component/forensics/proc/wipe_hiddenprints()
