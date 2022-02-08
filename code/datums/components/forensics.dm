@@ -38,7 +38,7 @@
 /datum/component/forensics/proc/wipe_fingerprints()
 	for (var/print in fingerprints)
 		var/numCharWiped = rand(0,max(0,round(EU,1)))
-		var/pos = rand(0,length(print)-)
+		var/pos = rand(0,length(print)-numCharWiped)
 		print.splicetext(pos,)
 	return TRUE
 
