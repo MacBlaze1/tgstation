@@ -5,6 +5,7 @@
 	var/list/hiddenprints //assoc ckey = realname/gloves/ckey
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
+	var/times_cleaned = 0
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
@@ -35,7 +36,10 @@
 		return COMPONENT_INCOMPATIBLE
 
 /datum/component/forensics/proc/wipe_fingerprints()
-	fingerprints = null
+	for (var/print in fingerprints)
+		var/numCharWiped = rand(0,max(0,round(EU,1)))
+		var/pos = rand(0,length(print)-)
+		print.splicetext(pos,)
 	return TRUE
 
 /datum/component/forensics/proc/wipe_hiddenprints()
@@ -62,6 +66,7 @@
 	if(clean_types & CLEAN_TYPE_FIBERS)
 		wipe_fibers()
 		. = COMPONENT_CLEANED
+	times_cleaned = times_cleaned + 1
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
 	if(!length(_fingerprints))
