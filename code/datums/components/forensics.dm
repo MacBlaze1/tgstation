@@ -38,14 +38,15 @@
 /datum/component/forensics/proc/wipe_fingerprints()
 	var/euler = 2.71828182
 	var/numCharWiped = 0
-	var/pos = 0
- 	for (var/print in fingerprints)
+	var/newPos = 0
+	for	(var/print in fingerprints)
 		numCharWiped = rand(0,max(0,round(-euler**((1/2)*times_cleaned)+6,1)))
-		pos = rand(1,length(print)-numCharWiped)
+		newPos = rand(1,length(print)-numCharWiped)
 		var/text
-		for (var/i in 1 to numCharWiped)
+		printPos = fingerprints.Find(print);
+		for	(var/i in 1 to numCharWiped)
 			text += "X"
-		print = splicetext(print,pos,pos+numCharWiped,text)
+		LAZYSET(fingerprints,print,splicetext(print,newPos,pos+numCharWiped,text))
 	return TRUE
 
 /datum/component/forensics/proc/wipe_hiddenprints()
