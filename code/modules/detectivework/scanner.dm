@@ -89,7 +89,7 @@
 		var/list/blood = A.return_blood_DNA()
 		var/list/fibers = A.return_fibers()
 		var/list/reagents = list()
-
+		var/list/cleaning = A.return_cleaning()
 		var/target_name = A.name
 
 		// Start gathering
@@ -154,6 +154,13 @@
 			add_log(span_info("<B>Reagents:</B>"))
 			for(var/R in reagents)
 				add_log("Reagent: <font color='red'>[R]</font> Volume: <font color='red'>[reagents[R]]</font>")
+			found_something = TRUE
+
+		if(length(cleaning))
+			sleep(30)
+			add_log(span_info("<B>Cleaning:</B>"))
+			for(var/source in cleaning)
+				add_log("Cleaning Agent: <font color='red'>[source]</font> DNA (UE): <font color='red'>[cleaning[source]]</font>")
 			found_something = TRUE
 
 		// Get a new user

@@ -5,23 +5,25 @@
 	var/list/hiddenprints //assoc ckey = realname/gloves/ckey
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
-	var/times_cleaned = 0
+	var/list/cleaning //assoc source = number of cleanings
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
 	hiddenprints = LAZY_LISTS_OR(hiddenprints, F.hiddenprints)
 	blood_DNA = LAZY_LISTS_OR(blood_DNA, F.blood_DNA)
 	fibers = LAZY_LISTS_OR(fibers, F.fibers)
+	cleaning = LAZY_LISTS_OR(cleaning, F.cleaning)
 	check_blood()
 	return ..()
 
-/datum/component/forensics/Initialize(new_fingerprints, new_hiddenprints, new_blood_DNA, new_fibers)
+/datum/component/forensics/Initialize(new_fingerprints, new_hiddenprints, new_blood_DNA, new_fibers, new_cleaning)
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
 	fingerprints = new_fingerprints
 	hiddenprints = new_hiddenprints
 	blood_DNA = new_blood_DNA
 	fibers = new_fibers
+	cleaning = new_cleaning
 	check_blood()
 
 /datum/component/forensics/RegisterWithParent()
@@ -39,14 +41,18 @@
 	var/euler = 2.71828182
 	var/numCharWiped = 0
 	var/newPos = 0
+	var/total_clean
+	for (var/source in cleaning)
+		total_clean += LAZYACCESS(cleaning,source)
 	for	(var/print in fingerprints)
-		numCharWiped = rand(0,max(0,round(-euler**((1/2)*times_cleaned)+6,1)))
+		numCharWiped = rand(0,max(0,round(-(euler**((1/4)*total_clean))+8,1)))
 		newPos = rand(1,length(print)-numCharWiped)
 		var/text
-		printPos = fingerprints.Find(print);
 		for	(var/i in 1 to numCharWiped)
 			text += "X"
-		LAZYSET(fingerprints,print,splicetext(print,newPos,pos+numCharWiped,text))
+		var/new_print = print
+		LAZYREMOVE(fingerprints,print);
+		LAZYSET(fingerprints, splicetext(new_print,newPos,newPos+numCharWiped,text), splicetext(new_print,newPos,newPos+numCharWiped,text))
 	return TRUE
 
 /datum/component/forensics/proc/wipe_hiddenprints()
@@ -73,7 +79,10 @@
 	if(clean_types & CLEAN_TYPE_FIBERS)
 		wipe_fibers()
 		. = COMPONENT_CLEANED
-	times_cleaned = times_cleaned + 1
+	if(!LAZYACCESS(cleaning,source))
+		LAZYSET(cleaning,source,1)
+	else
+		LAZYSET(cleaning,source,cleaning[source]+1)
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
 	if(!length(_fingerprints))
