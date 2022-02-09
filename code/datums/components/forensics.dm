@@ -8,6 +8,7 @@
 	var/list/cleaning //assoc source = number of cleanings
 	var/clean_constant = (1/4)
 	var/clean_offset = 8
+	var/minimum_max_char_clean = 3
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
@@ -41,17 +42,17 @@
 
 /datum/component/forensics/proc/handle_wipe(var/list/evidence_kind_list)
 	var/num_char_wiped = 0
-	var/newPos = 0
+	var/insert_pos = 0
 	var/total_clean = 0
 	for (var/agent in cleaning)
 		total_clean += LAZYACCESS(cleaning,agent)
 	for	(var/evidence in evidence_kind_list)
-		num_char_wiped = rand(0,max(3,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
-		newPos = rand(1,length(evidence)-num_char_wiped)
+		num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
+		insert_pos = rand(1,length(evidence)-num_char_wiped)
 		var/text
 		for	(var/i in 1 to num_char_wiped)
 			text += "X"
-		LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),newPos,newPos+num_char_wiped,text))
+		LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+num_char_wiped,text))
 	return evidence_kind_list
 
 /datum/component/forensics/proc/wipe_fingerprints()
