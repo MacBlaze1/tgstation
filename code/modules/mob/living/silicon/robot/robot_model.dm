@@ -539,7 +539,7 @@
 	var/turf/our_turf = get_turf(robot_owner)
 
 	if(reagents.has_chemical_flag(REAGENT_CLEANS, 1))
-		our_turf.wash(CLEAN_SCRUB)
+		our_turf.wash(CLEAN_SCRUB,src)
 
 	reagents.expose(our_turf, TOUCH, 10)
 	// We use more water doing this then mopping

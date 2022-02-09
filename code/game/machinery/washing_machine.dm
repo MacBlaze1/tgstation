@@ -202,7 +202,7 @@ GLOBAL_LIST_INIT(dye_registry, list(
 /obj/machinery/washing_machine/proc/wash_cycle()
 	for(var/X in contents)
 		var/atom/movable/AM = X
-		AM.wash(CLEAN_WASH)
+		AM.wash(CLEAN_WASH,src)
 		AM.machine_wash(src)
 
 	//if we had the ability to brainwash, remove that now

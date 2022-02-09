@@ -157,7 +157,7 @@
 	examine_list += span_danger("[A.p_theyre()] covered in corrosive liquid!")
 
 /// Makes it possible to clean acid off of objects.
-/datum/component/acid/proc/on_clean(atom/A, clean_types)
+/datum/component/acid/proc/on_clean(atom/A, clean_types,agent)
 	SIGNAL_HANDLER
 
 	if(!(clean_types & CLEAN_TYPE_ACID))

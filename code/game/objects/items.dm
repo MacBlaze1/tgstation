@@ -1228,7 +1228,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		current_action.UpdateButtonIcon(status_only, force)
 
 // Update icons if this is being carried by a mob
-/obj/item/wash(clean_types)
+/obj/item/wash(clean_types,agent)
 	. = ..()
 
 	if(ismob(loc))

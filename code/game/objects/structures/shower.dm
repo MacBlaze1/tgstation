@@ -143,7 +143,7 @@
 		wash_atom(AM)
 
 /obj/machinery/shower/proc/wash_atom(atom/target)
-	target.wash(CLEAN_RAD | CLEAN_WASH)
+	target.wash(CLEAN_RAD | CLEAN_WASH,src)
 	SEND_SIGNAL(target, COMSIG_ADD_MOOD_EVENT, "shower", /datum/mood_event/nice_shower)
 	reagents.expose(target, (TOUCH), SHOWER_EXPOSURE_MULTIPLIER * SHOWER_SPRAY_VOLUME / max(reagents.total_volume, SHOWER_SPRAY_VOLUME))
 	if(isliving(target))

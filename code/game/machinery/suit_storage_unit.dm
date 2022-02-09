@@ -428,7 +428,7 @@
 				things_to_clear += mob_occupant.get_all_contents()
 			for(var/am in things_to_clear) //Scorches away blood and forensic evidence, although the SSU itself is unaffected
 				var/atom/movable/dirty_movable = am
-				dirty_movable.wash(CLEAN_ALL)
+				dirty_movable.wash(CLEAN_ALL,src)
 		open_machine(FALSE)
 		if(mob_occupant)
 			dump_inventory_contents()

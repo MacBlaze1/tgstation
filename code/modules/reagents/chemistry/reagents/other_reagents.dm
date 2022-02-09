@@ -189,7 +189,7 @@
 /datum/reagent/water/expose_obj(obj/exposed_obj, reac_volume)
 	. = ..()
 	exposed_obj.extinguish()
-	exposed_obj.wash(CLEAN_TYPE_ACID)
+	exposed_obj.wash(CLEAN_TYPE_ACID,src)
 	// Monkey cube
 	if(istype(exposed_obj, /obj/item/food/monkeycube))
 		var/obj/item/food/monkeycube/cube = exposed_obj
@@ -1155,19 +1155,19 @@
 
 /datum/reagent/space_cleaner/expose_obj(obj/exposed_obj, reac_volume)
 	. = ..()
-	exposed_obj?.wash(clean_types)
+	exposed_obj?.wash(clean_types,src)
 
 /datum/reagent/space_cleaner/expose_turf(turf/exposed_turf, reac_volume)
 	. = ..()
 	if(reac_volume < 1)
 		return
 
-	exposed_turf.wash(clean_types)
+	exposed_turf.wash(clean_types,src)
 	for(var/am in exposed_turf)
 		var/atom/movable/movable_content = am
 		if(ismopable(movable_content)) // Mopables will be cleaned anyways by the turf wash
 			continue
-		movable_content.wash(clean_types)
+		movable_content.wash(clean_types,src)
 
 	for(var/mob/living/simple_animal/slime/exposed_slime in exposed_turf)
 		exposed_slime.adjustToxLoss(rand(5,10))
@@ -1175,7 +1175,7 @@
 /datum/reagent/space_cleaner/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume, show_message=TRUE, touch_protection=0)
 	. = ..()
 	if(methods & (TOUCH|VAPOR))
-		exposed_mob.wash(clean_types)
+		exposed_mob.wash(clean_types,src)
 
 /datum/reagent/space_cleaner/ez_clean
 	name = "EZ Clean"

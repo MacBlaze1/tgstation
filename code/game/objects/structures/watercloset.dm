@@ -319,11 +319,11 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/urinal, 32)
 		user.adjust_drowsyness(rand(-2, -3)) //Washing your face wakes you up if you're falling asleep
 	else if(ishuman(user))
 		var/mob/living/carbon/human/human_user = user
-		if(!human_user.wash_hands(CLEAN_WASH))
+		if(!human_user.wash_hands(CLEAN_WASH,src))
 			to_chat(user, span_warning("Your hands are covered by something!"))
 			return
 	else
-		user.wash(CLEAN_WASH)
+		user.wash(CLEAN_WASH,src)
 
 	user.visible_message(span_notice("[user] washes [user.p_their()] [washing_face ? "face" : "hands"] using [src]."), \
 						span_notice("You wash your [washing_face ? "face" : "hands"] using [src]."))
@@ -406,7 +406,7 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/urinal, 32)
 			busy = FALSE
 			return 1
 		busy = FALSE
-		O.wash(CLEAN_WASH)
+		O.wash(CLEAN_WASH,src)
 		reagents.expose(O, TOUCH, 5 / max(reagents.total_volume, 5))
 		user.visible_message(span_notice("[user] washes [O] using [src]."), \
 							span_notice("You wash [O] using [src]."))
@@ -528,11 +528,11 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/urinal, 32)
 		user.adjust_drowsyness(rand(-2, -3)) //Washing your face wakes you up if you're falling asleep
 	else if(ishuman(user))
 		var/mob/living/carbon/human/human_user = user
-		if(!human_user.wash_hands(CLEAN_WASH))
+		if(!human_user.wash_hands(CLEAN_WASH,src))
 			to_chat(user, span_warning("Your hands are covered by something!"))
 			return
 	else
-		user.wash(CLEAN_WASH)
+		user.wash(CLEAN_WASH,src)
 
 	user.visible_message(span_notice("[user] washes [user.p_their()] [washing_face ? "face" : "hands"] using [src]."), \
 						span_notice("You wash your [washing_face ? "face" : "hands"] using [src]."))
@@ -600,7 +600,7 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/urinal, 32)
 			busy = FALSE
 			return TRUE
 		busy = FALSE
-		O.wash(CLEAN_WASH)
+		O.wash(CLEAN_WASH,src)
 		reagents.expose(O, TOUCH, 5 / max(reagents.total_volume, 5))
 		user.visible_message(span_notice("[user] washes [O] using [src]."), \
 							span_notice("You wash [O] using [src]."))

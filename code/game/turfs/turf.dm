@@ -653,7 +653,7 @@ GLOBAL_LIST_EMPTY(station_turfs)
 /**
  * Called when this turf is being washed. Washing a turf will also wash any mopable floor decals
  */
-/turf/wash(clean_types)
+/turf/wash(clean_types,agent)
 	. = ..()
 
 	for(var/am in src)
@@ -662,7 +662,7 @@ GLOBAL_LIST_EMPTY(station_turfs)
 		var/atom/movable/movable_content = am
 		if(!ismopable(movable_content))
 			continue
-		movable_content.wash(clean_types)
+		movable_content.wash(clean_types,agent)
 
 /**
  * Returns adjacent turfs to this turf that are reachable, in all cardinal directions

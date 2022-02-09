@@ -1117,11 +1117,11 @@
  * Arguments:
  * * clean_types: any of the CLEAN_ constants
  */
-/atom/proc/wash(clean_types)
+/atom/proc/wash(clean_types, agent)
 	SHOULD_CALL_PARENT(TRUE)
 
 	. = FALSE
-	if(SEND_SIGNAL(src, COMSIG_COMPONENT_CLEAN_ACT, clean_types) & COMPONENT_CLEANED)
+	if(SEND_SIGNAL(src, COMSIG_COMPONENT_CLEAN_ACT, clean_types, agent) & COMPONENT_CLEANED)
 		. = TRUE
 
 	// Basically "if has washable coloration"

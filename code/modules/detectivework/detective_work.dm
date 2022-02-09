@@ -29,7 +29,7 @@
 {
 	var/datum/component/forensics/D = GetComponent(/datum/component/forensics)
 	if(D)
-		.D.cleaning
+		. = D.cleaning
 }
 
 /atom/proc/add_fingerprint_list(list/fingerprints) //ASSOC LIST FINGERPRINT = FINGERPRINT

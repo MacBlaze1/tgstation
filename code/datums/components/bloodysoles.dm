@@ -207,7 +207,7 @@
 /**
  * Called when the parent item is being washed
  */
-/datum/component/bloodysoles/proc/on_clean(datum/source, clean_types)
+/datum/component/bloodysoles/proc/on_clean(datum/source, clean_types,agent)
 	SIGNAL_HANDLER
 
 	if(!(clean_types & CLEAN_TYPE_BLOOD) || last_blood_state == BLOOD_STATE_NOT_BLOODY)

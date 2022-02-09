@@ -33,7 +33,7 @@
 				//it is intentional that the mop rounds xp but soap does not, USE THE SACRED TOOL
 				total_experience_gain += max(round(cleanable_decal.beauty / CLEAN_SKILL_BEAUTY_ADJUSTMENT, 1), 0)
 			cleaner.mind.adjust_experience(/datum/skill/cleaning, total_experience_gain)
-		A.wash(CLEAN_SCRUB)
+		A.wash(CLEAN_SCRUB,src)
 
 	reagents.expose(A, TOUCH, 10) //Needed for proper floor wetting.
 	var/val2remove = 1

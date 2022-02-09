@@ -563,13 +563,13 @@
  *
  * Returns false if we couldn't wash our hands due to them being obscured, otherwise true
  */
-/mob/living/carbon/human/proc/wash_hands(clean_types)
+/mob/living/carbon/human/proc/wash_hands(clean_types,agent)
 	var/obscured = check_obscured_slots()
 	if(obscured & ITEM_SLOT_GLOVES)
 		return FALSE
 
 	if(gloves)
-		if(gloves.wash(clean_types))
+		if(gloves.wash(clean_types,agent))
 			update_inv_gloves()
 	else if((clean_types & CLEAN_TYPE_BLOOD) && blood_in_hands > 0)
 		blood_in_hands = 0
@@ -605,39 +605,39 @@
 /**
  * Called on the COMSIG_COMPONENT_CLEAN_FACE_ACT signal
  */
-/mob/living/carbon/human/proc/clean_face(datum/source, clean_types)
+/mob/living/carbon/human/proc/clean_face(datum/source, clean_types,agent)
 	SIGNAL_HANDLER
 	if(!is_mouth_covered() && clean_lips())
 		. = TRUE
 
-	if(glasses && is_eyes_covered(FALSE, TRUE, TRUE) && glasses.wash(clean_types))
+	if(glasses && is_eyes_covered(FALSE, TRUE, TRUE) && glasses.wash(clean_types,agent))
 		update_inv_glasses()
 		. = TRUE
 
 	var/obscured = check_obscured_slots()
-	if(wear_mask && !(obscured & ITEM_SLOT_MASK) && wear_mask.wash(clean_types))
+	if(wear_mask && !(obscured & ITEM_SLOT_MASK) && wear_mask.wash(clean_types,agent))
 		update_inv_wear_mask()
 		. = TRUE
 
 /**
  * Called when this human should be washed
  */
-/mob/living/carbon/human/wash(clean_types)
+/mob/living/carbon/human/wash(clean_types,agent)
 	. = ..()
 
 	// Wash equipped stuff that cannot be covered
-	if(wear_suit?.wash(clean_types))
+	if(wear_suit?.wash(clean_types,agent))
 		update_inv_wear_suit()
 		. = TRUE
 
-	if(belt?.wash(clean_types))
+	if(belt?.wash(clean_types,agent))
 		update_inv_belt()
 		. = TRUE
 
 	// Check and wash stuff that can be covered
 	var/obscured = check_obscured_slots()
 
-	if(w_uniform && !(obscured & ITEM_SLOT_ICLOTHING) && w_uniform.wash(clean_types))
+	if(w_uniform && !(obscured & ITEM_SLOT_ICLOTHING) && w_uniform.wash(clean_types,agent))
 		update_inv_w_uniform()
 		. = TRUE
 

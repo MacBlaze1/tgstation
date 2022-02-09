@@ -159,8 +159,8 @@
 		if(length(cleaning))
 			sleep(30)
 			add_log(span_info("<B>Cleaning:</B>"))
-			for(var/source in cleaning)
-				add_log("Cleaning Agent: <font color='red'>[source]</font> DNA (UE): <font color='red'>[cleaning[source]]</font>")
+			for(var/agent in cleaning)
+				add_log("Cleaning Agent: <font color='red'>[agent]</font>")
 			found_something = TRUE
 
 		// Get a new user
