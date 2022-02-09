@@ -15,6 +15,12 @@
 	if(D)
 		. = D.blood_DNA
 
+/atom/proc/return_origin_changed_DNA()
+	var/datum/component/forensics/D = GetComponent(/datum/component/forensics)
+	if(D)
+		. = D.origin_changed_DNA
+
+
 /atom/proc/blood_DNA_length()
 	var/datum/component/forensics/D = GetComponent(/datum/component/forensics)
 	if(D)

@@ -88,6 +88,7 @@
 		var/list/fingerprints = list()
 		var/list/blood = A.return_blood_DNA()
 		var/list/fibers = A.return_fibers()
+		var/list/obsfucated_blood = A.return_origin_changed_DNA()
 		var/list/reagents = list()
 		var/list/cleaning = A.return_cleaning()
 		var/target_name = A.name
@@ -138,7 +139,9 @@
 			add_log(span_info("<B>Blood:</B>"))
 			found_something = TRUE
 			for(var/B in blood)
-				add_log("Type: <font color='red'>[blood[B]]</font> DNA (UE): <font color='red'>[B]</font>")
+				add_log("Type: <font color='red'>[blood[B]]</font>")
+			for(var/B in obsfucated_blood)
+				add_log("DNA (UE): <font color='red'>[obsfucated_blood[B]]</font>")
 
 		//Fibers
 		if(length(fibers))
