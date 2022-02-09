@@ -6,7 +6,6 @@
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
 	var/list/cleaning //assoc source = number of cleanings
-	var/list/origin_changed_DNA // assoc original dna = obfuscated DNA
 	var/clean_constant = (1/4)
 	var/clean_offset = 8
 	var/minimum_max_char_clean = 3
@@ -15,19 +14,17 @@
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
 	hiddenprints = LAZY_LISTS_OR(hiddenprints, F.hiddenprints)
 	blood_DNA = LAZY_LISTS_OR(blood_DNA, F.blood_DNA)
-	origin_changed_DNA = LAZY_LISTS_OR(origin_changed_DNA,F.origin_changed_DNA)
 	fibers = LAZY_LISTS_OR(fibers, F.fibers)
 	cleaning = LAZY_LISTS_OR(cleaning, F.cleaning)
 	check_blood()
 	return ..()
 
-/datum/component/forensics/Initialize(new_fingerprints, new_hiddenprints, new_blood_DNA, new_origin_changed_DNA, new_fibers, new_cleaning)
+/datum/component/forensics/Initialize(new_fingerprints, new_hiddenprints, new_blood_DNA, new_fibers, new_cleaning)
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
 	fingerprints = new_fingerprints
 	hiddenprints = new_hiddenprints
 	blood_DNA = new_blood_DNA
-	origin_changed_DNA = new_origin_changed_DNA
 	fibers = new_fibers
 	cleaning = new_cleaning
 	check_blood()
@@ -44,18 +41,14 @@
 		return COMPONENT_INCOMPATIBLE
 
 /datum/component/forensics/proc/handle_wipe(var/list/evidence_kind_list)
-	var/num_char_wiped = 0
-	var/insert_pos = 0
-	var/total_clean = 0
+	var/total_clean
 	for (var/agent in cleaning)
 		total_clean += LAZYACCESS(cleaning,agent)
 	for	(var/evidence in evidence_kind_list)
-		num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
-		insert_pos = rand(1,length(evidence)-num_char_wiped)
-		var/text
-		for	(var/i in 1 to num_char_wiped)
-			text += "X"
-		LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+num_char_wiped,text))
+		var/num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
+		for(var/i = 1 to num_char_wiped)
+			var/insert_pos = rand(1,LAZYLEN(LAZYACCESS(evidence_kind_list,evidence))-1)
+			LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+1,"X"))
 	return evidence_kind_list
 
 /datum/component/forensics/proc/wipe_fingerprints()
@@ -66,7 +59,8 @@
 	return //no.
 
 /datum/component/forensics/proc/wipe_blood_DNA()
-	handle_wipe(origin_changed_DNA)
+	for(var/B in blood_DNA)
+		handle_wipe(LAZYACCESS(blood_DNA,B))
 	return TRUE
 
 /datum/component/forensics/proc/wipe_fibers()
@@ -204,10 +198,8 @@
 	if(!length(dna))
 		return
 	LAZYINITLIST(blood_DNA)
-	LAZYINITLIST(origin_changed_DNA)
 	for(var/i in dna)
 		blood_DNA[i] = dna[i]
-		LAZYADDASSOC(origin_changed_DNA,dna,dna)
 	check_blood()
 	return TRUE
 

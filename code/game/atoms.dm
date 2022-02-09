@@ -861,8 +861,11 @@
 	if(get_blood_id() != /datum/reagent/blood)
 		return
 	var/list/blood_dna = list()
+	var/list/origin_changed_dna
+	LAZYINITLIST(origin_changed_dna)
 	if(dna)
-		blood_dna[dna.unique_enzymes] = dna.blood_type
+		LAZYADDASSOC(origin_changed_dna,dna.blood_type, dna.unique_enzymes)
+		blood_dna[dna.unique_enzymes] = origin_changed_dna
 	else
 		blood_dna["UNKNOWN DNA"] = "X*"
 	return blood_dna
