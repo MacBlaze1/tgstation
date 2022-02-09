@@ -129,7 +129,7 @@
 			sleep(30)
 			add_log(span_info("<B>Prints:</B>"))
 			for(var/finger in fingerprints)
-				add_log("[finger]")
+				add_log("[fingerprints[finger]]")
 			found_something = TRUE
 
 		// Blood
@@ -145,7 +145,7 @@
 			sleep(30)
 			add_log(span_info("<B>Fibers:</B>"))
 			for(var/fiber in fibers)
-				add_log("[fiber]")
+				add_log("[fibers[fiber]]")
 			found_something = TRUE
 
 		//Reagents

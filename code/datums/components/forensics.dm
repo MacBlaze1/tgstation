@@ -39,22 +39,22 @@
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
 
-/datum/component/forensics/proc/handle_wipe(var/evidence_kind_list)
+/datum/component/forensics/proc/handle_wipe(var/list/evidence_kind_list)
 	var/num_char_wiped = 0
 	var/newPos = 0
-	var/total_clean
-	for (var/source in cleaning)
-		total_clean += LAZYACCESS(cleaning,source)
+	var/total_clean = 0
+	for (var/agent in cleaning)
+		total_clean += LAZYACCESS(cleaning,agent)
 	for	(var/evidence in evidence_kind_list)
 		num_char_wiped = rand(0,max(3,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
 		newPos = rand(1,length(evidence)-num_char_wiped)
 		var/text
 		for	(var/i in 1 to num_char_wiped)
 			text += "X"
-		LAZYSET(evidence_kind_list, evidence, splicetext(evidence,newPos,newPos+num_char_wiped,text))
+		LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),newPos,newPos+num_char_wiped,text))
+	return evidence_kind_list
 
 /datum/component/forensics/proc/wipe_fingerprints()
-	
 	handle_wipe(fingerprints)
 	return TRUE
 
@@ -85,7 +85,7 @@
 	if(!LAZYACCESS(cleaning,agent))
 		LAZYSET(cleaning,agent,1)
 	else
-		LAZYSET(cleaning,agent,cleaning[agent]+1)
+		LAZYSET(cleaning,agent,LAZYACCESS(cleaning,agent)+1)
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
 	if(!length(_fingerprints))
@@ -116,7 +116,8 @@
 				H.gloves.add_fingerprint(H, TRUE) //ignoregloves = 1 to avoid infinite loop.
 				return
 		var/full_print = md5(H.dna.unique_identity)
-		LAZYSET(fingerprints, full_print, full_print)
+		if(!LAZYACCESS(fingerprints,full_print))
+			LAZYSET(fingerprints, full_print, full_print)
 	return TRUE
 
 /datum/component/forensics/proc/add_fiber_list(list/_full_fiber) //list(text)
@@ -129,26 +130,32 @@
 
 /datum/component/forensics/proc/add_fibers(mob/living/carbon/human/M)
 	var/item_multiplier = isitem(src)?1.2:1
-	var/full_fiber = md5(REF(src))
+	var/full_fiber
 	if(M.wear_suit)
+		full_fiber = md5(REF(M.wear_suit))
 		if(prob(10*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
 			LAZYSET(fibers, full_fiber, full_fiber)
 		if(!(M.wear_suit.body_parts_covered & CHEST))
 			if(M.w_uniform)
+				full_fiber = md5(REF(M.w_uniform))
 				if(prob(12*item_multiplier) && !LAZYACCESS(fibers, full_fiber)) //Wearing a suit means less of the uniform exposed.
 					LAZYSET(fibers, full_fiber, full_fiber)
 		if(!(M.wear_suit.body_parts_covered & HANDS))
 			if(M.gloves)
+				full_fiber = md5(REF(M.gloves))
 				if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
 					LAZYSET(fibers, full_fiber, full_fiber)
 	else if(M.w_uniform)
+		full_fiber = md5(REF(M.w_uniform))
 		if(prob(15*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
 			// "Added full_fiber: [full_fiber]"
 			LAZYSET(fibers, full_fiber, full_fiber)
 		if(M.gloves)
+			full_fiber = md5(REF(M.gloves))
 			if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
 				LAZYSET(fibers, full_fiber, full_fiber)
 	else if(M.gloves)
+		full_fiber = md5(REF(M.gloves))
 		if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
 			LAZYSET(fibers, full_fiber, full_fiber)
 	return TRUE
