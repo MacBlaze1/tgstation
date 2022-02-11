@@ -136,7 +136,7 @@
 
 		// Blood
 		if (length(blood))
-			if(prob(10*max(0,((times_scanned+1)-times_cleaned))))
+			if(prob(10*(1+max(0,6-(min(5,times_cleaned) + times_scanned)))))
 				sleep(30)
 				add_log(span_info("<B>Blood:</B>"))
 				found_something = TRUE
