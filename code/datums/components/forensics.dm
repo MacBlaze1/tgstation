@@ -6,9 +6,11 @@
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
 	var/list/cleaning //assoc source = number of cleanings
+	var/times_cleaned = 0
 	var/clean_constant = (1/4)
 	var/clean_offset = 8
 	var/minimum_max_char_clean = 3
+	var/times_scanned = 0
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
@@ -32,23 +34,22 @@
 /datum/component/forensics/RegisterWithParent()
 	check_blood()
 	RegisterSignal(parent, COMSIG_COMPONENT_CLEAN_ACT, .proc/clean_act)
+	RegisterSignal(parent, COMSIG_CLOTHING_DETECTIVE_SCANNED, .proc/scanned)
 
 /datum/component/forensics/UnregisterFromParent()
 	UnregisterSignal(parent, list(COMSIG_COMPONENT_CLEAN_ACT))
+	UnregisterSignal(parent, list(COMSIG_CLOTHING_DETECTIVE_SCANNED))
 
 /datum/component/forensics/PostTransfer()
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
 
 /datum/component/forensics/proc/handle_wipe(var/list/evidence_kind_list)
-	var/total_clean
-	for (var/agent in cleaning)
-		total_clean += LAZYACCESS(cleaning,agent)
 	for	(var/evidence in evidence_kind_list)
-		var/num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*total_clean))+clean_offset,1)))
+		var/num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*times_cleaned))+clean_offset,1)))
 		for(var/i = 1 to num_char_wiped)
 			var/insert_pos = rand(1,LAZYLEN(LAZYACCESS(evidence_kind_list,evidence))-1)
-			LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+1,"X"))
+			LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+1,"-"))
 	return evidence_kind_list
 
 /datum/component/forensics/proc/wipe_fingerprints()
@@ -59,13 +60,15 @@
 	return //no.
 
 /datum/component/forensics/proc/wipe_blood_DNA()
-	for(var/B in blood_DNA)
-		handle_wipe(LAZYACCESS(blood_DNA,B))
 	return TRUE
 
 /datum/component/forensics/proc/wipe_fibers()
-	handle_wipe(fibers)
+	for(var/fiber in fibers)
+		handle_wipe(LAZYACCESS(fibers,fiber))
 	return TRUE
+
+/datum/component/forensics/proc/scanned(datum/source)
+	times_scanned +=1
 
 /datum/component/forensics/proc/clean_act(datum/source, clean_types, agent)
 	SIGNAL_HANDLER
@@ -84,6 +87,7 @@
 		LAZYSET(cleaning,agent,1)
 	else
 		LAZYSET(cleaning,agent,LAZYACCESS(cleaning,agent)+1)
+	times_cleaned +=1
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
 	if(!length(_fingerprints))
@@ -118,44 +122,64 @@
 			LAZYSET(fingerprints, full_print, full_print)
 	return TRUE
 
-/datum/component/forensics/proc/add_fiber_list(list/_full_fiber) //list(text)
-	if(!length(_full_fiber))
+/datum/component/forensics/proc/add_fiber_list(list/_fiber_id) //list(text)
+	if(!length(_fiber_id))
 		return
 	LAZYINITLIST(fibers)
-	for(var/i in _full_fiber) //We use an associative list, make sure we don't just merge a non-associative list into ours.
+	for(var/i in _fiber_id) //We use an associative list, make sure we don't just merge a non-associative list into ours.
 		fibers[i] = i
 	return TRUE
 
 /datum/component/forensics/proc/add_fibers(mob/living/carbon/human/M)
 	var/item_multiplier = isitem(src)?1.2:1
-	var/full_fiber
+	var/fiber_id
+	var/fiber_text
+	var/list/fiberid_fibertext
+	LAZYINITLIST(fiberid_fibertext)
 	if(M.wear_suit)
-		full_fiber = md5(REF(M.wear_suit))
-		if(prob(10*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
-			LAZYSET(fibers, full_fiber, full_fiber)
+		fiber_text = "Material from \a [M.wear_suit]."
+		fiber_id = md5(REF(M.wear_suit))
+		if(prob(10*item_multiplier) && !LAZYACCESS(fibers, fiber_id))
+			LAZYCLEARLIST(fiberid_fibertext)
+			LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+			LAZYSET(fibers, fiber_id, fiberid_fibertext)
 		if(!(M.wear_suit.body_parts_covered & CHEST))
 			if(M.w_uniform)
-				full_fiber = md5(REF(M.w_uniform))
-				if(prob(12*item_multiplier) && !LAZYACCESS(fibers, full_fiber)) //Wearing a suit means less of the uniform exposed.
-					LAZYSET(fibers, full_fiber, full_fiber)
+				fiber_text = "Fibers from \a [M.w_uniform]."
+				fiber_id = md5(REF(M.w_uniform))
+				if(prob(12*item_multiplier) && !LAZYACCESS(fibers, fiber_id)) //Wearing a suit means less of the uniform exposed.
+					LAZYCLEARLIST(fiberid_fibertext)
+					LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+					LAZYSET(fibers, fiber_id, fiberid_fibertext)
 		if(!(M.wear_suit.body_parts_covered & HANDS))
 			if(M.gloves)
-				full_fiber = md5(REF(M.gloves))
-				if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
-					LAZYSET(fibers, full_fiber, full_fiber)
+				fiber_text = "Material from a pair of [M.gloves.name]."
+				fiber_id = md5(REF(M.gloves))
+				if(prob(20*item_multiplier) && !LAZYACCESS(fibers, fiber_id))
+					LAZYCLEARLIST(fiberid_fibertext)
+					LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+					LAZYSET(fibers, fiber_id, fiberid_fibertext)
 	else if(M.w_uniform)
-		full_fiber = md5(REF(M.w_uniform))
-		if(prob(15*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
-			// "Added full_fiber: [full_fiber]"
-			LAZYSET(fibers, full_fiber, full_fiber)
+		fiber_text = "Fibers from \a [M.w_uniform]."
+		fiber_id = md5(REF(M.w_uniform))
+		if(prob(15*item_multiplier) && !LAZYACCESS(fibers, fiber_id))
+			LAZYCLEARLIST(fiberid_fibertext)
+			LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+			LAZYSET(fibers, fiber_id, fiberid_fibertext)
 		if(M.gloves)
-			full_fiber = md5(REF(M.gloves))
-			if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
-				LAZYSET(fibers, full_fiber, full_fiber)
+			fiber_text = "Material from a pair of [M.gloves.name]."
+			fiber_id = md5(REF(M.gloves))
+			if(prob(20*item_multiplier) && !LAZYACCESS(fibers, fiber_id))
+				LAZYCLEARLIST(fiberid_fibertext)
+				LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+				LAZYSET(fibers, fiber_id,fiberid_fibertext)
 	else if(M.gloves)
-		full_fiber = md5(REF(M.gloves))
-		if(prob(20*item_multiplier) && !LAZYACCESS(fibers, full_fiber))
-			LAZYSET(fibers, full_fiber, full_fiber)
+		fiber_text = "Material from a pair of [M.gloves.name]."
+		fiber_id = md5(REF(M.gloves))
+		if(prob(20*item_multiplier) && !LAZYACCESS(fibers, fiber_id))
+			LAZYCLEARLIST(fiberid_fibertext)
+			LAZYADDASSOC(fiberid_fibertext,fiber_text,fiber_id)
+			LAZYSET(fibers, fiber_id,fiberid_fibertext)
 	return TRUE
 
 /datum/component/forensics/proc/add_hiddenprint_list(list/_hiddenprints) //list(ckey = text)

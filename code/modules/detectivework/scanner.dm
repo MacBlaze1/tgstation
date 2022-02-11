@@ -90,6 +90,8 @@
 		var/list/fibers = A.return_fibers()
 		var/list/reagents = list()
 		var/list/cleaning = A.return_cleaning()
+		var/times_scanned = A.return_times_scanned()
+		var/times_cleaned = A.return_times_cleaned()
 		var/target_name = A.name
 
 		// Start gathering
@@ -120,7 +122,7 @@
 							blood[blood_DNA] = blood_type
 
 		// We gathered everything. Create a fork and slowly display the results to the holder of the scanner.
-
+		SEND_SIGNAL(A, COMSIG_CLOTHING_DETECTIVE_SCANNED)
 		var/found_something = FALSE
 		add_log("<B>[station_time_timestamp()][get_timestamp()] - [target_name]</B>", 0)
 
@@ -134,19 +136,21 @@
 
 		// Blood
 		if (length(blood))
-			sleep(30)
-			add_log(span_info("<B>Blood:</B>"))
-			found_something = TRUE
-			for(var/B in blood)
-				var/list/origin_changed_dna = LAZYACCESS(blood,B)
-				add_log("Type: <font color='red'>[LAZYACCESSASSOC(blood,B,1)]</font> DNA (UE): <font color='red'>[LAZYACCESS(origin_changed_dna,LAZYACCESSASSOC(blood,B,1))]</font>")
+			if(prob(10*max(0,((times_scanned+1)-times_cleaned))))
+				sleep(30)
+				add_log(span_info("<B>Blood:</B>"))
+				found_something = TRUE
+				for(var/B in blood)
+					add_log("Type: <font color='red'>[blood[B]]</font> DNA (UE): <font color='red'>[B]</font>")
 
 		//Fibers
 		if(length(fibers))
 			sleep(30)
 			add_log(span_info("<B>Fibers:</B>"))
 			for(var/fiber in fibers)
-				add_log("[fibers[fiber]]")
+				var/list/fiberid_fibertext = LAZYACCESS(fibers,fiber)
+				add_log("[LAZYACCESSASSOC(fibers,fiber,1)]")
+				add_log("Fiber ID: [LAZYACCESS(fiberid_fibertext,LAZYACCESSASSOC(fibers,fiber,1))]")
 			found_something = TRUE
 
 		//Reagents
