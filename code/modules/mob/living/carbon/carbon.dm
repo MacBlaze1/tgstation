@@ -1175,7 +1175,7 @@
 		update_inv_wear_mask()
 		. = TRUE
 
-	if(ears && !(obscured & ITEM_SLOT_EARS) && ears.wash(clean_types))
+	if(ears && !(obscured & ITEM_SLOT_EARS) && ears.wash(clean_types,agent))
 		update_inv_ears()
 		. = TRUE
 

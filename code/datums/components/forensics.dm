@@ -61,7 +61,8 @@
 
 /datum/component/forensics/proc/wipe_blood_DNA()
 	for(var/dna in blood_DNA)
-		dna[1] = FALSE
+		var/list/dna_list = blood_DNA[dna]
+		dna_list[2] = FALSE
 	return TRUE
 
 /datum/component/forensics/proc/wipe_fibers()
@@ -85,10 +86,8 @@
 	if(clean_types & CLEAN_TYPE_FIBERS)
 		wipe_fibers()
 		. = COMPONENT_CLEANED
-	if(!LAZYACCESS(cleaning,agent))
-		LAZYSET(cleaning,agent,1)
-	else
-		LAZYSET(cleaning,agent,LAZYACCESS(cleaning,agent)+1)
+	if(!LAZYACCESS(cleaning,NAMEOF(agent)) && agent != null)
+		LAZYADD(cleaning,NAMEOF(agent))
 	times_cleaned +=1
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
@@ -226,7 +225,6 @@
 	LAZYINITLIST(blood_DNA)
 	for(var/i in dna)
 		blood_DNA[i] = dna[i]
-		dna[i][1] = TRUE
 	check_blood()
 	return TRUE
 
@@ -234,6 +232,7 @@
 	if(!isitem(parent))
 		return
 	for(var/dna in blood_DNA)
-		if(dna[1] == TRUE)
+		var/list/dna_list = blood_DNA[dna]
+		if(dna_list[2] == TRUE)
 			parent.AddElement(/datum/element/decal/blood)
 			return

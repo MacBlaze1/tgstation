@@ -141,7 +141,7 @@
 				add_log(span_info("<B>Blood:</B>"))
 				found_something = TRUE
 				for(var/B in blood)
-					add_log("Type: <font color='red'>[blood[B][0]]</font> DNA (UE): <font color='red'>[B]</font>")
+					add_log("Type: <font color='red'>[blood[B][1]]</font> DNA (UE): <font color='red'>[B]</font>")
 
 		//Fibers
 		if(length(fibers))

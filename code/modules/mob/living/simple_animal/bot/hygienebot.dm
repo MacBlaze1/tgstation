@@ -218,4 +218,4 @@
 	if(bot_cover_flags & BOT_COVER_EMAGGED)
 		A.fire_act()  //lol pranked no cleaning besides that
 	else
-		A.wash(CLEAN_WASH)
+		A.wash(CLEAN_WASH,src)
