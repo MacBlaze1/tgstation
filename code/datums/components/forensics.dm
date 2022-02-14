@@ -6,11 +6,12 @@
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
 	var/list/cleaning //assoc source = number of cleanings
-	var/times_cleaned = 0
+	var/times_cleaned = 0 //number of total times it has been cleaned
+	var/times_scanned = 0 //number of times a detective scanner has been used
 	var/clean_constant = (1/4)
 	var/clean_offset = 8
 	var/minimum_max_char_clean = 3
-	var/times_scanned = 0
+
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
