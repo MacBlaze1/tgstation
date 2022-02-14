@@ -860,9 +860,13 @@
 /mob/living/carbon/get_blood_dna_list()
 	if(get_blood_id() != /datum/reagent/blood)
 		return
+	var/list/dna_visible = list()
 	var/list/blood_dna = list()
 	if(dna)
-		blood_dna[dna.unique_enzymes] = dna.blood_type
+		var/shown = TRUE
+		dna_visible.Add(dna.blood_type)
+		dna_visible.Add(shown)
+		blood_dna[dna.unique_enzymes] = dna_visible
 	else
 		blood_dna["UNKNOWN DNA"] = "X*"
 	return blood_dna
