@@ -76,7 +76,14 @@
 /datum/component/forensics/proc/clean_act(datum/source, clean_types, agent)
 	SIGNAL_HANDLER
 
-	. = NONE
+	var/name
+	if(isatom(agent))
+		var/atom/cleaning_agent = agent
+		name = cleaning_agent.name
+	if(istype(agent,/datum/reagent))
+		var/datum/reagent/cleaning_agent = agent
+		name = cleaning_agent.name
+
 	if(clean_types & CLEAN_TYPE_FINGERPRINTS)
 		wipe_fingerprints()
 		. = COMPONENT_CLEANED
@@ -86,8 +93,8 @@
 	if(clean_types & CLEAN_TYPE_FIBERS)
 		wipe_fibers()
 		. = COMPONENT_CLEANED
-	if(!LAZYACCESS(cleaning,NAMEOF(agent)) && agent != null)
-		LAZYADD(cleaning,NAMEOF(agent))
+	if(!LAZYFIND(cleaning,name) && agent != null)
+		LAZYADD(cleaning,name)
 	times_cleaned +=1
 
 /datum/component/forensics/proc/add_fingerprint_list(list/_fingerprints) //list(text)
