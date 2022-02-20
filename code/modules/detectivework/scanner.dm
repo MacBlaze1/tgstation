@@ -100,7 +100,8 @@
 
 			var/mob/living/carbon/human/H = A
 			if(!H.gloves)
-				fingerprints += md5(H.dna.unique_identity)
+				var/full_print =  md5(H.dna.unique_identity)
+				LAZYSET(fingerprints, full_print, full_print)
 
 		else if(!ismob(A))
 
@@ -136,7 +137,7 @@
 
 		// Blood
 		if (length(blood))
-			if(prob(10*(1+max(0,6-(min(5,times_cleaned) + times_scanned)))))
+			if(prob(10*(1+max(0,9-(min(9,times_cleaned))))))
 				sleep(30)
 				add_log(span_info("<B>Blood:</B>"))
 				found_something = TRUE
