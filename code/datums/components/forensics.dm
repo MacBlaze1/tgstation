@@ -13,11 +13,12 @@
 	var/minimum_max_char_clean = 3
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
-	fingerprints = LAZY_LISTS_OR(fingerprints, F.fingerprints)
-	hiddenprints = LAZY_LISTS_OR(hiddenprints, F.hiddenprints)
-	blood_DNA = LAZY_LISTS_OR(blood_DNA, F.blood_DNA)
-	fibers = LAZY_LISTS_OR(fibers, F.fibers)
-	cleaning = LAZY_LISTS_OR(cleaning, F.cleaning)
+	
+	fingerprints = LAZY_LISTS_OR(fingerprints,F.fingerprints)
+	hiddenprints = LAZY_LISTS_OR(hiddenprints,F.hiddenprints)
+	blood_DNA = LAZY_LISTS_OR(F.blood_DNA,blood_DNA)
+	fibers = LAZY_LISTS_OR(fibers,F.fibers)
+	cleaning = LAZY_LISTS_OR(cleaning,F.cleaning)
 	check_blood()
 	return ..()
 
@@ -60,9 +61,7 @@
 	return //no.
 
 /datum/component/forensics/proc/wipe_blood_DNA()
-	for(var/dna in blood_DNA)
-		var/list/dna_list = blood_DNA[dna]
-		dna_list[2] = FALSE
+	set_bloody(FALSE)
 	return TRUE
 
 /datum/component/forensics/proc/wipe_fibers()
@@ -238,8 +237,18 @@
 /datum/component/forensics/proc/check_blood()
 	if(!isitem(parent))
 		return
+	if(is_bloody())
+		parent.AddElement(/datum/element/decal/blood)
+		return
+
+/datum/component/forensics/proc/is_bloody()
 	for(var/dna in blood_DNA)
 		var/list/dna_list = blood_DNA[dna]
 		if(dna_list[2] == TRUE)
-			parent.AddElement(/datum/element/decal/blood)
-			return
+			return TRUE
+	return FALSE
+
+/datum/component/forensics/proc/set_bloody(var/bloody)
+	for(var/dna in blood_DNA)
+		var/list/dna_list = blood_DNA[dna]
+		dna_list[2] = bloody

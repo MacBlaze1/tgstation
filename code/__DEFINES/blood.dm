@@ -1,5 +1,5 @@
 /// Checks if an object is covered in blood
-#define HAS_BLOOD_DNA(thing) (length(thing.GetComponent(/datum/component/forensics)?.blood_DNA))
+#define HAS_BLOOD_DNA(thing) (thing.GetComponent(/datum/component/forensics)?.is_bloody())
 
 //Bloody shoes/footprints
 /// Minimum alpha of footprints

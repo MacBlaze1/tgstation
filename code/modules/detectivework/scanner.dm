@@ -90,7 +90,6 @@
 		var/list/fibers = A.return_fibers()
 		var/list/reagents = list()
 		var/list/cleaning = A.return_cleaning()
-		var/times_scanned = A.return_times_scanned()
 		var/times_cleaned = A.return_times_cleaned()
 		var/target_name = A.name
 
