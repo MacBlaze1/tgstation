@@ -32,13 +32,6 @@
 		. = D.cleaning
 }
 
-/atom/proc/return_times_scanned()
-{
-	var/datum/component/forensics/D = GetComponent(/datum/component/forensics)
-	if(D)
-		. = D.times_scanned
-}
-
 /atom/proc/return_times_cleaned()
 {
 	var/datum/component/forensics/D = GetComponent(/datum/component/forensics)

@@ -5,18 +5,14 @@
 	var/list/hiddenprints //assoc ckey = realname/gloves/ckey
 	var/list/blood_DNA //assoc dna = bloodtype
 	var/list/fibers //assoc print = print
-	var/list/cleaning //assoc source = number of cleanings
+	var/list/cleaning //list of cleaning agents
 	var/times_cleaned = 0 //number of total times it has been cleaned
-	var/times_scanned = 0 //number of times a detective scanner has been used
-	var/clean_constant = (1/4)
-	var/clean_offset = 8
-	var/minimum_max_char_clean = 3
 
 /datum/component/forensics/InheritComponent(datum/component/forensics/F, original) //Use of | and |= being different here is INTENTIONAL.
 	
 	fingerprints = LAZY_LISTS_OR(fingerprints,F.fingerprints)
 	hiddenprints = LAZY_LISTS_OR(hiddenprints,F.hiddenprints)
-	blood_DNA = LAZY_LISTS_OR(F.blood_DNA,blood_DNA)
+	blood_DNA = LAZY_LISTS_OR(F.blood_DNA,blood_DNA) //we always want to use the new updated blood if possible, this is important
 	fibers = LAZY_LISTS_OR(fibers,F.fibers)
 	cleaning = LAZY_LISTS_OR(cleaning,F.cleaning)
 	check_blood()
@@ -35,11 +31,9 @@
 /datum/component/forensics/RegisterWithParent()
 	check_blood()
 	RegisterSignal(parent, COMSIG_COMPONENT_CLEAN_ACT, .proc/clean_act)
-	RegisterSignal(parent, COMSIG_CLOTHING_DETECTIVE_SCANNED, .proc/scanned)
 
 /datum/component/forensics/UnregisterFromParent()
 	UnregisterSignal(parent, list(COMSIG_COMPONENT_CLEAN_ACT))
-	UnregisterSignal(parent, list(COMSIG_CLOTHING_DETECTIVE_SCANNED))
 
 /datum/component/forensics/PostTransfer()
 	if(!isatom(parent))
@@ -47,7 +41,7 @@
 
 /datum/component/forensics/proc/handle_wipe(var/list/evidence_kind_list)
 	for	(var/evidence in evidence_kind_list)
-		var/num_char_wiped = rand(0,max(minimum_max_char_clean,round(-(NUM_E**(clean_constant*times_cleaned))+clean_offset,1)))
+		var/num_char_wiped = rand(0,5)
 		for(var/i = 1 to num_char_wiped)
 			var/insert_pos = rand(1,LAZYLEN(LAZYACCESS(evidence_kind_list,evidence))-1)
 			LAZYSET(evidence_kind_list, evidence, splicetext(LAZYACCESS(evidence_kind_list,evidence),insert_pos,insert_pos+1,"-"))
@@ -61,7 +55,9 @@
 	return //no.
 
 /datum/component/forensics/proc/wipe_blood_DNA()
-	set_bloody(FALSE)
+	for(var/dna in blood_DNA)
+		var/list/dna_list = blood_DNA[dna]
+		dna_list[2] = FALSE
 	return TRUE
 
 /datum/component/forensics/proc/wipe_fibers()
@@ -69,14 +65,11 @@
 		handle_wipe(LAZYACCESS(fibers,fiber))
 	return TRUE
 
-/datum/component/forensics/proc/scanned(datum/source)
-	times_scanned +=1
-
 /datum/component/forensics/proc/clean_act(datum/source, clean_types, agent)
 	SIGNAL_HANDLER
 
 	var/name
-	if(isatom(agent))
+	if(isatom(agent)) // had to do this unless an iscleaningagent() should be made
 		var/atom/cleaning_agent = agent
 		name = cleaning_agent.name
 	if(istype(agent,/datum/reagent))
@@ -92,7 +85,7 @@
 	if(clean_types & CLEAN_TYPE_FIBERS)
 		wipe_fibers()
 		. = COMPONENT_CLEANED
-	if(!LAZYFIND(cleaning,name) && agent != null)
+	if(!LAZYFIND(cleaning,name) && agent != null) // if the parent hasnt been cleaned with this agent, add it to the list
 		LAZYADD(cleaning,name)
 	times_cleaned +=1
 
@@ -139,7 +132,7 @@
 
 /datum/component/forensics/proc/add_fibers(mob/living/carbon/human/M)
 	var/item_multiplier = isitem(src)?1.2:1
-	var/fiber_id
+	var/fiber_id 
 	var/fiber_text
 	var/list/fiberid_fibertext
 	LAZYINITLIST(fiberid_fibertext)
@@ -244,11 +237,6 @@
 /datum/component/forensics/proc/is_bloody()
 	for(var/dna in blood_DNA)
 		var/list/dna_list = blood_DNA[dna]
-		if(dna_list[2] == TRUE)
+		if(dna_list[2] == TRUE)  // if any of the blood on the parent is shown
 			return TRUE
 	return FALSE
-
-/datum/component/forensics/proc/set_bloody(var/bloody)
-	for(var/dna in blood_DNA)
-		var/list/dna_list = blood_DNA[dna]
-		dna_list[2] = bloody

@@ -122,7 +122,7 @@
 							blood[blood_DNA] = blood_type
 
 		// We gathered everything. Create a fork and slowly display the results to the holder of the scanner.
-		SEND_SIGNAL(A, COMSIG_CLOTHING_DETECTIVE_SCANNED)
+
 		var/found_something = FALSE
 		add_log("<B>[station_time_timestamp()][get_timestamp()] - [target_name]</B>", 0)
 
@@ -149,8 +149,8 @@
 			add_log(span_info("<B>Fibers:</B>"))
 			for(var/fiber in fibers)
 				var/list/fiberid_fibertext = LAZYACCESS(fibers,fiber)
-				add_log("[LAZYACCESSASSOC(fibers,fiber,1)]")
-				add_log("Fiber ID: [LAZYACCESS(fiberid_fibertext,LAZYACCESSASSOC(fibers,fiber,1))]")
+				add_log("[LAZYACCESSASSOC(fibers,fiber,1)]") // material from x
+				add_log("Fiber ID: [LAZYACCESS(fiberid_fibertext,LAZYACCESSASSOC(fibers,fiber,1))]") //the REF of the clothing
 			found_something = TRUE
 
 		//Reagents
